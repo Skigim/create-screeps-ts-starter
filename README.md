@@ -28,6 +28,7 @@ pnpm watch
 - **🎯 Modern TypeScript** - strict mode with latest features
 - **📦 Zero config** - works out of the box
 - **🗄️ screeps.json** - Supports screeps.json for easier config
+- **🐳 Docker support** - Contains a docker-compose file for running a local server
 
 ## Available Scripts
 
@@ -59,6 +60,14 @@ SCREEPS_LOCAL_PASSWORD=your_password
 
 Get your token from [Screeps Account Settings](https://screeps.com/a/#!/account/auth-tokens).
 
+## Running Local Server
+
+To run a local Screeps server, ensure you have Docker installed. Copy the server/.env.example to server/.env and replace your steam key and path to nw. Then run:
+
+```bash
+cd server && docker-compose up -d
+```
+
 ## Features
 
 - Modern ES2020+ TypeScript setup
@@ -67,3 +76,4 @@ Get your token from [Screeps Account Settings](https://screeps.com/a/#!/account/
 - Hot reload development workflow
 - Support for both MMO and private
 - Supports `screeps.json` configuration
+- Contains docker-compose for local server
