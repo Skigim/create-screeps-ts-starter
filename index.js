@@ -15,14 +15,25 @@ async function createProject(projectName) {
 
   // Copy template files
   await copyTemplate(templateDir, targetDir, projectName);
+  await copyReadme(targetDir, projectName);
 
   console.log(`✅ Created ${projectName}`);
   console.log(`\nNext steps:`);
   console.log(`  cd ${projectName}`);
   console.log(`  pnpm install`);
   console.log(`  cp .env.example .env`);
-  console.log(`  # Edit .env with your Screeps token`);
-  console.log(`  pnpm watch`);
+  console.log(`  cp .screeps.json.example .screeps.json`);
+  console.log(
+    `  # Edit .env with your Screeps token or username and password for private servers`
+  );
+  console.log(`  # Edit .screeps.json if needed`);
+  console.log(`  pnpm watch - to compile and upload your code to Screeps.com`);
+  console.log(
+    `  pnpm watch:ptr - to compile and upload your to the PTR server`
+  );
+  console.log(
+    `  pnpm watch:local - to compile and upload your to your local server`
+  );
 }
 
 async function copyTemplate(src, dest, projectName) {
@@ -44,6 +55,13 @@ async function copyTemplate(src, dest, projectName) {
       await fs.writeFile(destPath, content);
     }
   }
+}
+
+async function copyReadme(dest, projectName) {
+  const readmePath = path.join(__dirname, "README.md");
+  let content = await fs.readFile(readmePath, "utf8");
+  content = content.replace(/\{\{PROJECT_NAME\}\}/g, projectName);
+  await fs.writeFile(path.join(dest, "README.md"), content);
 }
 
 // Get project name from args

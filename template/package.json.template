@@ -4,10 +4,13 @@
   "type": "module",
   "scripts": {
     "build": "esbuild src/main.ts --bundle --outdir=dist --format=cjs --platform=node",
-    "upload": "tsx upload.ts",
-    "push": "pnpm build && pnpm upload",
-    "watch": "tsx builder.ts",
-    "watch:local": "tsx local-builder.ts"
+    "upload": "ts-node upload.ts",
+    "push": "pnpm run build && pnpm run upload",
+    "push:local": "pnpm run build && pnpm run upload local",
+    "push:ptr": "pnpm run build && pnpm run upload ptr",
+    "watch": "ts-node builder.ts",
+    "watch:local": "ts-node builder.ts local",
+    "watch:ptr": "ts-node builder.ts ptr"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -15,7 +18,6 @@
     "dotenv": "^16.4.0",
     "esbuild": "^0.25.0",
     "node-fetch": "^3.3.2",
-    "tsx": "^4.0.0",
     "typescript": "^5.6.0"
   }
 }

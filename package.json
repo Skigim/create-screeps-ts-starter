@@ -1,21 +1,13 @@
 {
   "name": "@tigatok/create-screeps-ts-starter",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "A modern TypeScript starter template for Screeps",
   "bin": {
     "create-screeps-typescript-starter": "./index.js"
   },
-  "files": [
-    "index.js",
-    "template/"
-  ],
-  "keywords": [
-    "screeps",
-    "typescript",
-    "template",
-    "starter"
-  ],
+  "files": ["index.js", "template/"],
+  "keywords": ["screeps", "typescript", "template", "starter"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Tigatok/create-screeps-ts-starter.git"

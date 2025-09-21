@@ -1,7 +1,10 @@
+// builder.ts - Updated to support server selection
 import * as esbuild from "esbuild";
 import { spawn } from "child_process";
 
 async function startWatch() {
+  const serverName = process.argv[2] || "main"; // default to main server
+
   const ctx = await esbuild.context({
     entryPoints: ["src/main.ts"],
     bundle: true,
@@ -18,7 +21,7 @@ async function startWatch() {
               console.error("❌ Build failed", result.errors);
             } else {
               console.log("✅ Build succeeded, uploading...");
-              runUpload();
+              runUpload(serverName);
             }
           });
         },
@@ -27,10 +30,11 @@ async function startWatch() {
   });
 
   await ctx.watch();
-  console.log("👀 Watching for changes...");
+  console.log(`👀 Watching for changes... (uploading to '${serverName}')`);
 }
-function runUpload() {
-  const child = spawn("npm", ["run", "upload"], {
+
+function runUpload(serverName: string) {
+  const child = spawn("npm", ["run", "upload", serverName], {
     stdio: "inherit",
     shell: true,
   });

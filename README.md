@@ -12,9 +12,9 @@ cd my-screeps-bot
 # Install dependencies
 pnpm install
 
-# Set up your Screeps token
+# Set up your Screeps access
 cp .env.example .env
-# Edit .env with your token from https://screeps.com/a/#!/account/auth-tokens
+cp .screeps.json.example .screeps.json
 
 # Start developing with hot reload
 pnpm watch
@@ -27,6 +27,7 @@ pnpm watch
 - **📁 Local development** - option to copy files to local Screeps client
 - **🎯 Modern TypeScript** - strict mode with latest features
 - **📦 Zero config** - works out of the box
+- **🗄️ screeps.json** - Supports screeps.json for easier config
 
 ## Available Scripts
 
@@ -34,17 +35,26 @@ pnpm watch
 pnpm build        # Build for production
 pnpm upload       # Upload to Screeps servers
 pnpm push         # Build + upload
+pnpm push:local   # Build + copy to local client
+pnpm push:ptr     # Build + upload to PTR server
 pnpm watch        # Watch files + auto upload
 pnpm watch:local  # Watch files + copy to local client
+pnpm watch:ptr    # Watch files + upload to PTR server
 ```
 
 ## Configuration
 
-Add your Screeps token to `.env`:
+Update env variables in `.env`:
 
 ```env
-SCREEPS_TOKEN=your_token_here
 SCREEPS_BRANCH=default
+
+# Screeps MMO server configuration
+SCREEPS_TOKEN=your_token_here
+
+# Only needed if running a local server
+SCREEPS_LOCAL_USERNAME=your_username
+SCREEPS_LOCAL_PASSWORD=your_password
 ```
 
 Get your token from [Screeps Account Settings](https://screeps.com/a/#!/account/auth-tokens).
@@ -56,3 +66,4 @@ Get your token from [Screeps Account Settings](https://screeps.com/a/#!/account/
 - Strict type checking
 - Hot reload development workflow
 - Support for both MMO and private
+- Supports `screeps.json` configuration
