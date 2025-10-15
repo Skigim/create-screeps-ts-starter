@@ -1,6 +1,6 @@
 {
   "name": "@tigatok/create-screeps-ts-starter",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "description": "A modern TypeScript starter template for Screeps",
   "bin": {
