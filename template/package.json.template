@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --outdir=dist --format=cjs --platform=node",
+    "build": "esbuild src/main.ts --bundle --outdir=dist --format=cjs --platform=node --target=node10",
     "upload": "ts-node upload.ts",
     "push": "pnpm run build && pnpm run upload",
     "push:local": "pnpm run build && pnpm run upload local",
