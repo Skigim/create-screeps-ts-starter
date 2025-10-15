@@ -7,8 +7,9 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "es2020",
-    "target": "esnext",
+    "module": "commonjs",
+    "target": "es2018",
+    "lib": ["es2020"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "types": ["screeps", "node"],
