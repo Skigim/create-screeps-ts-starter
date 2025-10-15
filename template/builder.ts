@@ -12,6 +12,7 @@ async function startWatch() {
     format: "cjs",
     platform: "node",
     sourcemap: false,
+    target: "node10",
     plugins: [
       {
         name: "rebuild-notifier",
