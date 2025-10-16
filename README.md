@@ -2,6 +2,10 @@
 
 Modern TypeScript starter template for [Screeps MMO](https://screeps.com/) with esbuild and hot reloading.
 
+## Requirements
+
+- [Node.js](https://nodejs.org/) v22+
+
 ## Quick Start
 
 ```bash
