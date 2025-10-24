@@ -6,8 +6,16 @@
   "bin": {
     "create-screeps-typescript-starter": "./index.js"
   },
-  "files": ["index.js", "template/"],
-  "keywords": ["screeps", "typescript", "template", "starter"],
+  "files": [
+    "index.js",
+    "template/"
+  ],
+  "keywords": [
+    "screeps",
+    "typescript",
+    "template",
+    "starter"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Tigatok/create-screeps-ts-starter.git"
@@ -17,5 +25,10 @@
   "packageManager": "pnpm@10.17.0",
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.12",
+    "@types/screeps": "^3.3.8",
+    "typescript": "^5.9.3"
   }
 }
