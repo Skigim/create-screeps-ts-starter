@@ -3,23 +3,17 @@
 import { Logger } from "../utils/logger.js";
 import type { CreepRole } from "../types.js";
 
-// --- Spawn Configuration ---
-
-// Define our "do-everything" bootstrap creep
-const BOOTSTRAP_ROLE: CreepRole = "builder";
-const MIN_BOOTSTRAP_CREEPS = 2; // Keep at least this many alive
-
-// Define other roles as we add them
-// const HARVESTER_ROLE: CreepRole = "harvester";
-// const HARVESTER_BODY: BodyPartConstant[] = [WORK, WORK, CARRY, MOVE]; // 300 energy
-// const MIN_HARVESTERS = 2;
+// Bootstrap configuration for RCL 1-2
+const MIN_BOOTSTRAP_CREEPS = 2;
 
 export class SpawnManager {
   /**
    * Runs the logic for a single spawn.
    * This is called by the roomManager for each spawn in the room.
+   * @param spawn - The spawn structure to manage
+   * @param quotas - The creep quotas calculated by roomManager
    */
-  public static run(spawn: StructureSpawn): void {
+  public static run(spawn: StructureSpawn, quotas: Partial<Record<CreepRole, number>>): void {
     if (spawn.spawning) {
       // Display spawning creep info
       const spawningCreep = Game.creeps[spawn.spawning.name];
@@ -34,49 +28,87 @@ export class SpawnManager {
       return; // Don't try to spawn if already spawning
     }
 
-    // --- Spawn Logic ---
-    // At the start, we only care about bootstrap creeps.
-    // We count *only* the bootstrap creeps assigned to this room.
-    let bootstrapCreepsInRoom = 0;
+    // Count creeps by role for this room
+    const counts: Partial<Record<CreepRole, number>> = {};
     for (const name in Game.creeps) {
       const creep = Game.creeps[name];
       if (!creep) continue;
-      if (creep.memory.role === BOOTSTRAP_ROLE && creep.memory.room === spawn.room.name) {
-        bootstrapCreepsInRoom++;
+      if (creep.memory.room === spawn.room.name) {
+        const role = creep.memory.role;
+        counts[role] = (counts[role] || 0) + 1;
       }
     }
 
-    // Build a target body based on the room's energy capacity (not current energy)
-    const targetBody = this.getBodyForRole(BOOTSTRAP_ROLE, spawn.room.energyCapacityAvailable);
-    const bodyCost = targetBody.reduce((cost, part) => cost + BODYPART_COST[part], 0);
+    // RCL 1-2: Bootstrap phase - only spawn builders
+    if (spawn.room.controller && spawn.room.controller.level <= 2) {
+      // Only spawn bootstrap builders up to our minimum
+      if ((counts.builder || 0) < MIN_BOOTSTRAP_CREEPS) {
+        const body = this.getBodyForRole("builder", spawn.room.energyCapacityAvailable);
+        const cost = body.reduce((sum: number, part: BodyPartConstant) => sum + BODYPART_COST[part], 0);
+        if (spawn.room.energyAvailable >= cost) {
+          this.trySpawnCreep(spawn, "builder", body);
+          return;
+        }
+      }
+    } else {
+      // RCL 3+: Specialized roles based on quotas
+      // Priority 1: Harvesters (critical for energy)
+      if ((counts.harvester || 0) < (quotas.harvester || 0)) {
+        const body = this.getBodyForRole("harvester", spawn.room.energyCapacityAvailable);
+        const cost = body.reduce((sum: number, part: BodyPartConstant) => sum + BODYPART_COST[part], 0);
+        if (spawn.room.energyAvailable >= cost) {
+          this.trySpawnCreep(spawn, "harvester", body);
+          return;
+        }
+      }
 
-    // If the spawn currently has enough energy (has naturally recharged) and fewer than our
-    // minimum required bootstrap creeps, attempt to spawn the capacity-appropriate body.
-    if (spawn.room.energyAvailable >= bodyCost && bootstrapCreepsInRoom < MIN_BOOTSTRAP_CREEPS) {
-      this.trySpawnCreep(spawn, BOOTSTRAP_ROLE, targetBody);
-      return; // Stop here, spawning is handled
+      // Priority 2: Builders (infrastructure)
+      if ((counts.builder || 0) < (quotas.builder || 0)) {
+        const body = this.getBodyForRole("builder", spawn.room.energyCapacityAvailable);
+        const cost = body.reduce((sum: number, part: BodyPartConstant) => sum + BODYPART_COST[part], 0);
+        if (spawn.room.energyAvailable >= cost) {
+          this.trySpawnCreep(spawn, "builder", body);
+          return;
+        }
+      }
+
+      // Priority 3: Upgraders (RCL progression)
+      if ((counts.upgrader || 0) < (quotas.upgrader || 0)) {
+        const body = this.getBodyForRole("upgrader", spawn.room.energyCapacityAvailable);
+        const cost = body.reduce((sum: number, part: BodyPartConstant) => sum + BODYPART_COST[part], 0);
+        if (spawn.room.energyAvailable >= cost) {
+          this.trySpawnCreep(spawn, "upgrader", body);
+          return;
+        }
+      }
+
+      // Priority 4: Haulers (when implemented)
+      if ((counts.hauler || 0) < (quotas.hauler || 0)) {
+        const body = this.getBodyForRole("hauler", spawn.room.energyCapacityAvailable);
+        const cost = body.reduce((sum: number, part: BodyPartConstant) => sum + BODYPART_COST[part], 0);
+        if (spawn.room.energyAvailable >= cost) {
+          this.trySpawnCreep(spawn, "hauler", body);
+          return;
+        }
+      }
     }
-
-    // --- Add future spawn logic here ---
-    // This is where you'll add your logic for dedicated harvesters, haulers, etc.
-    // once your bootstrap creeps have built a container.
-    //
-    // Example:
-    // const harvestersInRoom = /* ... count harvesters ... */;
-    // if (harvestersInRoom < MIN_HARVESTERS) {
-    //   this.trySpawnCreep(spawn, "harvester", HARVESTER_BODY);
-    //   return;
-    // }
   }
 
   /**
    * Build a body for a role based on the room's energy capacity.
-   * This focuses on useful builder bodies for bootstrap and scales with capacity.
+   * Uses static bodies for now, will be made smarter later.
    */
   private static getBodyForRole(role: CreepRole, capacity: number): BodyPartConstant[] {
     switch (role) {
+      case "harvester":
+        // Basic harvester: 2 WORK, 1 CARRY, 1 MOVE (300 energy)
+        if (capacity >= 300) {
+          return [WORK, WORK, CARRY, MOVE];
+        }
+        return [WORK, CARRY, MOVE]; // Fallback for low energy
+
       case "builder": {
-        // Ensure at least one CARRY and one MOVE. Allocate remaining energy to WORK parts.
+        // Builder: Scale WORK parts based on capacity
         const reserve = 50 + 50; // one CARRY + one MOVE
         const remaining = Math.max(0, capacity - reserve);
         const workCount = Math.max(1, Math.floor(remaining / 100));
@@ -87,6 +119,15 @@ export class SpawnManager {
         body.push(MOVE);
         return body;
       }
+
+      case "upgrader":
+        // Basic upgrader: 1 WORK, 1 CARRY, 1 MOVE (200 energy)
+        return [WORK, CARRY, MOVE];
+
+      case "hauler":
+        // Basic hauler: 2 CARRY, 1 MOVE (150 energy)
+        return [CARRY, CARRY, MOVE];
+
       default:
         // Fallback to a small general-purpose body
         return [WORK, CARRY, MOVE];

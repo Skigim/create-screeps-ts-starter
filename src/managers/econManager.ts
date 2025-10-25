@@ -2,9 +2,9 @@
 
 // Import the role classes
 import { RoleBuilder } from "../roles/role.builder.js";
-// import { RoleHarvester } from "../roles/role.harvester.js";
-// import { RoleUpgrader } from "../roles/role.upgrader.js";
-// import { RoleHauler } from "../roles/role.hauler.js";
+import { RoleHarvester } from "../roles/role.harvester.js";
+import { RoleUpgrader } from "../roles/role.upgrader.js";
+import { RoleHauler } from "../roles/role.hauler.js";
 import { Logger } from "../utils/logger.js";
 
 class EconManager {
@@ -26,15 +26,15 @@ class EconManager {
           case "builder":
             RoleBuilder.run(creep);
             break;
-        //   case "harvester":
-        //     RoleHarvester.run(creep);
-        //     break;
-        //   case "upgrader":
-        //     RoleUpgrader.run(creep);
-        //     break;
-        //   case "hauler":
-        //     RoleHauler.run(creep);
-        //     break;
+          case "harvester":
+            RoleHarvester.run(creep);
+            break;
+          case "upgrader":
+            RoleUpgrader.run(creep);
+            break;
+          case "hauler":
+            RoleHauler.run(creep);
+            break;
           default:
             // Log warning for unhandled roles but let it default to builder
             Logger.warning(

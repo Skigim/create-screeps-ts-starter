@@ -7,9 +7,14 @@ declare global {
     target?: Id<Source | StructureController | ConstructionSite>;
   }
 
+  interface RoomMemory {
+    creepQuotas?: Partial<Record<CreepRole, number>>;
+  }
+
   interface Memory {
     uuid: number;
     log: any;
+    rooms: Record<string, RoomMemory>;
   }
 
   // Syntax for adding properties to `global` (ex "global.log")
