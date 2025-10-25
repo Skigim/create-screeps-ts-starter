@@ -1,367 +1,213 @@
-# Screeps TypeScript Bot# Screeps TypeScript Bot# Create Screeps TypeScript Starter
+# Roma Aeterna 🏛️
 
+> *"All roads lead to Rome"* - A TypeScript-based Screeps bot built for expansion and efficiency
 
+Roma Aeterna is a modular, TypeScript-powered AI for [Screeps](https://screeps.com/), designed with Roman-inspired principles of organization, hierarchy, and systematic expansion. The bot features a clean manager-based architecture that separates economic, military, and infrastructure concerns.
 
-A well-structured TypeScript bot for [Screeps MMO](https://screeps.com/) featuring modular architecture, manager-based organization, and hot reloading.
+## 🎯 Features
 
+- **Modular Manager Architecture**: Cleanly separated concerns with dedicated managers for creeps, spawns, rooms, economy, and military
+- **TypeScript Support**: Full type safety and modern ES6+ features
+- **Prototype Extensions**: Custom methods on Creep, Room, and Spawn prototypes
+- **Hot Reload**: Watch mode for rapid development and testing
+- **Multi-Environment Support**: Easy deployment to main server, PTR, or local private server
 
+## 🏗️ Architecture
 
-## 🏗️ ArchitectureModern TypeScript bot for [Screeps MMO](https://screeps.com/) with esbuild and hot reloading.Modern TypeScript starter template for [Screeps MMO](https://screeps.com/) with esbuild and hot reloading.
+### Core Managers
 
+- **CreepManager**: Central hub for all creep operations, routing creeps to appropriate sub-managers
+- **EconManager**: Handles economic creeps (harvesters, haulers, upgraders, builders)
+- **MilitaryManager**: Manages military operations and combat creeps
+- **SpawnManager**: Controls creep spawning logic and prioritization
+- **RoomManager**: Oversees room-level operations and planning
+- **TowerManager**: Manages tower defense and repair operations
 
+### Creep Roles
 
-This bot uses a **router-based architecture** with clear separation of concerns:
+- **Harvester**: Collects energy from sources
+- **Hauler**: Transports energy from sources to structures
+- **Upgrader**: Upgrades the room controller
+- **Builder**: Constructs and repairs structures
 
-
-
-```## Requirements## Requirements
-
-main.ts
-
-   ↓
-
-creepManager (master router)
-
-   ↓- [Node.js](https://nodejs.org/) v22+- [Node.js](https://nodejs.org/) v22+
-
-   ├── econManager → economy roles (harvester, builder, upgrader, hauler)
-
-   └── militaryManager → military roles (defender, attacker, etc.)- pnpm (or npm)
-
-```
-
-## Quick Start
-
-### Project Structure
-
-## Quick Start
-
-```
-
-src/```bash
-
-├── main.ts                 # Entry point - game loop
-
-├── types.d.ts             # Global type definitions```bash# Create a new Screeps bot project
-
-│
-
-├── managers/              # High-level colony management# Install dependenciespnpm create @tigatok/screeps-ts-starter my-screeps-bot
-
-│   ├── creepManager.ts    # Master router for all creeps
-
-│   ├── econManager.ts     # Economy creep delegationpnpm installcd my-screeps-bot
-
-│   ├── militaryManager.ts # Military creep delegation
-
-│   ├── roomManager.ts     # Room-level logic
-
-│   ├── spawnManager.ts    # Spawn queue management
-
-│   └── towerManager.ts    # Tower automation# Set up your Screeps access# Install dependencies
-
-│
-
-├── roles/                 # Creep behavior (FSM)cp .env.example .envpnpm install
-
-│   ├── role.harvester.ts  # Energy harvesting
-
-│   ├── role.builder.ts    # Constructioncp .screeps.json.example .screeps.json
-
-│   ├── role.upgrader.ts   # Controller upgrading
-
-│   └── role.hauler.ts     # Energy transport# Set up your Screeps access
-
-│
-
-├── prototypes/            # Game object extensions# Start developing with hot reloadcp .env.example .env
-
-│   ├── creep.ts           # Creep.prototype extensions
-
-│   ├── room.ts            # Room.prototype extensionspnpm watchcp .screeps.json.example .screeps.json
-
-│   ├── spawn.ts           # StructureSpawn.prototype extensions
-
-│   └── index.ts           # Exports all prototypes```
-
-│
-
-└── utils/                 # Reusable helpers# Start developing with hot reload
-
-    ├── constants.ts       # Game constants & configs
-
-    └── logger.ts          # Colored console output## What's Includedpnpm watch
-
-```
-
-```
-
-## 🚀 Quick Start
-
-- **⚡ Fast builds** with esbuild
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- **🔥 Hot reload** - automatically uploads on file changes## What's Included
-
-- [Node.js](https://nodejs.org/) v22+
-
-- npm or pnpm- **📁 Local development** - option to copy files to local Screeps client
-
-
-
-### Installation- **🎯 Modern TypeScript** - strict mode with latest features- **⚡ Fast builds** with esbuild
-
-
-
-```bash- **📦 Zero config** - works out of the box- **🔥 Hot reload** - automatically uploads on file changes
-
-# Install dependencies
-
-npm install- **🗄️ screeps.json** - Supports screeps.json for easier config- **📁 Local development** - option to copy files to local Screeps client
-
-
-
-# Set up your Screeps credentials- **🐳 Docker support** - Contains a docker-compose file for running a local server- **🎯 Modern TypeScript** - strict mode with latest features
-
-cp .env.example .env
-
-cp .screeps.json.example .screeps.json- **📦 Zero config** - works out of the box
-
-
-
-# Edit .env and add your token## Available Scripts- **🗄️ screeps.json** - Supports screeps.json for easier config
-
-# Get token from: https://screeps.com/a/#!/account/auth-tokens
-
-```- **🐳 Docker support** - Contains a docker-compose file for running a local server
-
-
-
-### Development```bash
-
-
-
-```bashpnpm build        # Build for production## Available Scripts
-
-npm run build        # Build for production
-
-npm run upload       # Upload to Screeps serverspnpm upload       # Upload to Screeps servers
-
-npm run push         # Build + upload
-
-npm run push:local   # Build + upload to local serverpnpm push         # Build + upload```bash
-
-npm run push:ptr     # Build + upload to PTR server
-
-npm run watch        # Watch mode + auto uploadpnpm push:local   # Build + copy to local clientpnpm build        # Build for production
-
-npm run watch:local  # Watch mode + local server
-
-npm run watch:ptr    # Watch mode + PTR serverpnpm push:ptr     # Build + upload to PTR serverpnpm upload       # Upload to Screeps servers
-
-```
-
-pnpm watch        # Watch files + auto uploadpnpm push         # Build + upload
-
-## ⚙️ Configuration
-
-pnpm watch:local  # Watch files + copy to local clientpnpm push:local   # Build + copy to local client
-
-### Environment Variables (.env)
-
-pnpm watch:ptr    # Watch files + upload to PTR serverpnpm push:ptr     # Build + upload to PTR server
-
-```env
-
-SCREEPS_BRANCH=default```pnpm watch        # Watch files + auto upload
-
-
-
-# Screeps MMO serverpnpm watch:local  # Watch files + copy to local client
-
-SCREEPS_TOKEN=your_token_here
-
-## Configurationpnpm watch:ptr    # Watch files + upload to PTR server
-
-# Local server (optional)
-
-SCREEPS_LOCAL_USERNAME=your_username```
-
-SCREEPS_LOCAL_PASSWORD=your_password
-
-```Update env variables in `.env`:
-
-
-
-### Screeps Configuration (.screeps.json)## Configuration
-
-
-
-```json```env
-
-{
-
-  "main": {SCREEPS_BRANCH=defaultUpdate env variables in `.env`:
-
-    "token": "YOUR_TOKEN_HERE",
-
-    "protocol": "https",
-
-    "hostname": "screeps.com",
-
-    "port": 443,# Screeps MMO server configuration```env
-
-    "path": "/",
-
-    "branch": "default"SCREEPS_TOKEN=your_token_hereSCREEPS_BRANCH=default
-
-  }
-
-}
-
-```
-
-# Only needed if running a local server# Screeps MMO server configuration
-
-## 🐳 Local Development Server
-
-SCREEPS_LOCAL_USERNAME=your_usernameSCREEPS_TOKEN=your_token_here
-
-Run a local Screeps server using Docker:
-
-SCREEPS_LOCAL_PASSWORD=your_password
+- Node.js (v16 or higher)
+- pnpm package manager
+- A Screeps account (optional: private server for local testing)
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd create-screeps-ts-starter
 
-cd server```# Only needed if running a local server
+# Install dependencies
+pnpm install
 
-cp .env.example .env
-
-# Edit .env with your Steam keySCREEPS_LOCAL_USERNAME=your_username
-
-docker-compose up -d
-
-```Get your token from [Screeps Account Settings](https://screeps.com/a/#!/account/auth-tokens).SCREEPS_LOCAL_PASSWORD=your_password
-
-
-
-## 🎯 Key Features```
-
-
-
-### Router Architecture## Running Local Server
-
-- **Single loop** - All creeps processed once per tick
-
-- **Type-based routing** - Creeps routed by `memory.type` (economy/military)Get your token from [Screeps Account Settings](https://screeps.com/a/#!/account/auth-tokens).
-
-- **Role delegation** - Sub-managers handle specific roles
-
-- **Easy extension** - Add new managers without touching core loopTo run a local Screeps server, ensure you have Docker installed. Copy the server/.env.example to server/.env and replace your steam key and path to nw. Then run:
-
-
-
-### Creep Memory Structure## Running Local Server
-
-
-
-```typescript```bash
-
-interface CreepMemory {
-
-  type?: "economy" | "military";  // Manager typecd server && docker-compose up -dTo run a local Screeps server, ensure you have Docker installed. Copy the server/.env.example to server/.env and replace your steam key and path to nw. Then run:
-
-  role: string;                   // Specific role (harvester, builder, etc.)
-
-  working?: boolean;              // FSM state```
-
-  target?: Id<GameObject>;        // Current target
-
-}```bash
-
+# Configure your Screeps credentials
+cp screeps.json.example screeps.json
+# Edit screeps.json with your credentials
 ```
 
-## Featurescd server && docker-compose up -d
+### Configuration
 
-### Economy Roles
+Edit `screeps.json` with your Screeps credentials:
 
+```json
+{
+  "main": {
+    "email": "your-email@example.com",
+    "password": "your-password",
+    "branch": "main"
+  },
+  "ptr": {
+    "email": "your-email@example.com",
+    "password": "your-password",
+    "branch": "ptr"
+  },
+  "local": {
+    "host": "localhost",
+    "port": 21025,
+    "branch": "main"
+  }
+}
 ```
 
-- **Harvester** - Mines energy and fills spawns/extensions/towers
+## 📦 Build & Deploy
 
-- **Builder** - Constructs buildings at construction sites- Modern ES2020+ TypeScript setup
+### Development
 
-- **Upgrader** - Upgrades room controller
+```bash
+# Build once
+pnpm run build
 
-- **Hauler** - Picks up dropped resources and delivers to structures- Automatic bundling with esbuild## Features
+# Watch mode (auto-rebuild and upload to main server)
+pnpm run watch
 
+# Watch mode for local server
+pnpm run watch:local
 
+# Watch mode for PTR
+pnpm run watch:ptr
+```
 
-### Military Roles (Placeholder)- Strict type checking
+### Deployment
 
+```bash
+# Build and upload to main server
+pnpm run push
 
+# Upload to local server
+pnpm run push:local
 
-- **Defender** - Room defense (not yet implemented)- Hot reload development workflow- Modern ES2020+ TypeScript setup
+# Upload to PTR
+pnpm run push:ptr
+```
 
-- **Attacker** - Offensive operations (not yet implemented)
+## 📁 Project Structure
 
-- Support for both MMO and private servers- Automatic bundling with esbuild
+```
+src/
+├── main.ts                 # Main game loop
+├── types.d.ts             # Type declarations
+├── managers/              # Manager modules
+│   ├── creepManager.ts   # Central creep coordinator
+│   ├── econManager.ts    # Economic operations
+│   ├── militaryManager.ts # Military operations
+│   ├── roomManager.ts    # Room-level logic
+│   ├── spawnManager.ts   # Spawn control
+│   └── towerManager.ts   # Tower management
+├── roles/                 # Creep role behaviors
+│   ├── role.harvester.ts
+│   ├── role.hauler.ts
+│   ├── role.upgrader.ts
+│   └── role.builder.ts
+├── prototypes/            # Prototype extensions
+│   ├── creep.ts
+│   ├── room.ts
+│   └── spawn.ts
+└── utils/                 # Utility functions
+    ├── constants.ts
+    └── logger.ts
+```
 
-## 🛠️ Development
+## 🎮 Usage
 
-- Supports `screeps.json` configuration- Strict type checking
+The bot operates on a tick-based loop:
+
+1. **Creep Management**: All creeps are processed through `creepManager`, which routes them to the appropriate sub-manager based on their type (economy or military)
+2. **Spawn Management**: Each spawn evaluates creep needs and spawns new units based on role deficits
+3. **Room Management**: Room-level operations like planning and infrastructure management
+4. **Tower Operations**: Automated defense and repair
+
+## 🔧 Customization
 
 ### Adding a New Role
 
-- Contains docker-compose for local server- Hot reload development workflow
+1. Create a new role file in `src/roles/`
+2. Define the role behavior
+3. Add the role to the appropriate manager (econManager or militaryManager)
+4. Update spawn logic in `SpawnManager`
 
-1. Create role file in `src/roles/`
+### Extending Prototypes
 
-2. Add to appropriate manager (`econManager` or `militaryManager`)- Support for both MMO and private
-
-3. Update spawn logic in `spawnManager.ts`- Supports `screeps.json` configuration
-
-- Contains docker-compose for local server
-
-Example:
+Add new methods to prototypes in `src/prototypes/`:
 
 ```typescript
-// src/roles/role.miner.ts
-export class RoleMiner {
-  static run(creep: Creep): void {
-    // Your role logic here
-  }
-}
-
-// src/managers/econManager.ts
-import { RoleMiner } from "../roles/role.miner.js";
-
-// Add to switch statement
-case "miner":
-  RoleMiner.run(creep);
-  break;
+// Example: Add a method to Creep prototype
+Creep.prototype.myCustomMethod = function() {
+  // Your logic here
+};
 ```
 
-### Adding a New Manager Type
+## 🐛 Debugging
 
-1. Create manager in `src/managers/`
-2. Add to `creepManager.ts` router
-3. Update `CreepMemory` type in `types.d.ts`
+The bot includes a Logger utility for debugging:
 
-## 📊 Built With
+```typescript
+import { Logger } from "./utils/logger.js";
 
-- **TypeScript** - Type-safe JavaScript
-- **esbuild** - Fast bundler
-- **Prettier** - Code formatting
-- **ESLint** - Code linting (optional)
+Logger.info("Information message");
+Logger.warning("Warning message");
+Logger.error("Error message");
+```
 
-## 📝 License
+## 🌐 Local Development
 
-ISC
+A Docker-based local server is included for testing:
 
-## 🔗 Resources
+```bash
+cd server
+docker-compose up -d
+```
+
+Access the local server at `http://localhost:21025`
+
+## 📊 Performance Considerations
+
+- **Single Loop Architecture**: Creeps are only looped through once per tick
+- **Memory Cleanup**: Automatic cleanup of dead creep memory
+- **Type Safety**: TypeScript catches errors at compile time
+- **Modular Design**: Easy to profile and optimize individual managers
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+
+## 📜 License
+
+This project is open source and available under the MIT License.
+
+## 🎓 Resources
 
 - [Screeps Documentation](https://docs.screeps.com/)
 - [Screeps API Reference](https://docs.screeps.com/api/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+
+---
+
+*Built with the discipline of Roman engineering and the flexibility of modern TypeScript* ⚔️
