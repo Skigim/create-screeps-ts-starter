@@ -3,9 +3,6 @@
 import { Logger } from "../utils/logger.js";
 import type { CreepRole } from "../types.js";
 
-// Bootstrap configuration for RCL 1-2
-const MIN_BOOTSTRAP_CREEPS = 2;
-
 export class SpawnManager {
   /**
    * Runs the logic for a single spawn.
@@ -41,8 +38,15 @@ export class SpawnManager {
 
     // RCL 1-2: Bootstrap phase - only spawn builders
     if (spawn.room.controller && spawn.room.controller.level <= 2) {
-      // Only spawn bootstrap builders up to our minimum
-      if ((counts.builder || 0) < MIN_BOOTSTRAP_CREEPS) {
+      // Calculate total desired bootstrap population by summing all quotas
+      const totalDesiredBootstrapCreeps =
+        (quotas.harvester || 0) +
+        (quotas.builder || 0) +
+        (quotas.upgrader || 0) +
+        (quotas.hauler || 0);
+
+      // Spawn builders up to the total quota sum
+      if ((counts.builder || 0) < totalDesiredBootstrapCreeps) {
         const body = this.getBodyForRole("builder", spawn.room.energyCapacityAvailable);
         const cost = body.reduce((sum: number, part: BodyPartConstant) => sum + BODYPART_COST[part], 0);
         if (spawn.room.energyAvailable >= cost) {
@@ -96,40 +100,52 @@ export class SpawnManager {
 
   /**
    * Build a body for a role based on the room's energy capacity.
-   * Uses static bodies for now, will be made smarter later.
+   * Uses ratio-balanced base units that scale with capacity.
    */
   private static getBodyForRole(role: CreepRole, capacity: number): BodyPartConstant[] {
     switch (role) {
       case "harvester":
-        // Basic harvester: 2 WORK, 1 CARRY, 1 MOVE (300 energy)
-        if (capacity >= 300) {
-          return [WORK, WORK, CARRY, MOVE];
+      case "builder":
+      case "upgrader": {
+        // Work-heavy base unit: [WORK, WORK, CARRY, MOVE, MOVE] (cost: 350)
+        const workBaseUnit: BodyPartConstant[] = [WORK, WORK, CARRY, MOVE, MOVE];
+        const unitCost = 350;
+        const numUnits = Math.floor(capacity / unitCost);
+
+        // If capacity is too low, return small fallback
+        if (numUnits === 0) {
+          return [WORK, CARRY, MOVE]; // 200 energy
         }
-        return [WORK, CARRY, MOVE]; // Fallback for low energy
 
-      case "builder": {
-        // Builder: Scale WORK parts based on capacity
-        const reserve = 50 + 50; // one CARRY + one MOVE
-        const remaining = Math.max(0, capacity - reserve);
-        const workCount = Math.max(1, Math.floor(remaining / 100));
-
+        // Build body by repeating the base unit
         const body: BodyPartConstant[] = [];
-        for (let i = 0; i < workCount; i++) body.push(WORK);
-        body.push(CARRY);
-        body.push(MOVE);
+        for (let i = 0; i < numUnits; i++) {
+          body.push(...workBaseUnit);
+        }
         return body;
       }
 
-      case "upgrader":
-        // Basic upgrader: 1 WORK, 1 CARRY, 1 MOVE (200 energy)
-        return [WORK, CARRY, MOVE];
+      case "hauler": {
+        // Carry-heavy base unit: [CARRY, CARRY, WORK, MOVE, MOVE, MOVE] (cost: 350)
+        const haulerBaseUnit: BodyPartConstant[] = [CARRY, CARRY, WORK, MOVE, MOVE, MOVE];
+        const unitCost = 350;
+        const numUnits = Math.floor(capacity / unitCost);
 
-      case "hauler":
-        // Basic hauler: 2 CARRY, 1 MOVE (150 energy)
-        return [CARRY, CARRY, MOVE];
+        // If capacity is too low, return small fallback
+        if (numUnits === 0) {
+          return [CARRY, CARRY, MOVE]; // 150 energy
+        }
+
+        // Build body by repeating the base unit
+        const body: BodyPartConstant[] = [];
+        for (let i = 0; i < numUnits; i++) {
+          body.push(...haulerBaseUnit);
+        }
+        return body;
+      }
 
       default:
-        // Fallback to a small general-purpose body
+        // Fallback for unknown roles
         return [WORK, CARRY, MOVE];
     }
   }

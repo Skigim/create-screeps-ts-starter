@@ -1,6 +1,8 @@
 // in src/roles/role.builder.ts
 
 import { Logger } from "../utils/logger.js";
+import { Targeting } from "../utils/targeting.js";
+import { moveTo } from "../utils/movement.js";
 
 /**
  * This is the "do-everything" bootstrap creep.
@@ -13,42 +15,61 @@ export class RoleBuilder {
     if (creep.memory.working && creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
       creep.memory.working = false;
       creep.memory.target = undefined; // Clear target
+      creep.memory.targetPos = undefined; // Clear reserved spot
       creep.say("🔄 harvest");
+      console.log(`${creep.name}: Switched to harvest mode`);
     }
     // If harvesting and full of energy, switch to working
     if (!creep.memory.working && creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
       creep.memory.working = true;
       creep.memory.target = undefined; // Clear target
+      creep.memory.targetPos = undefined; // Clear reserved spot
       creep.say("⚡ work");
+      console.log(`${creep.name}: Switched to work mode`);
     }
 
     // 2. ACTION LOGIC
     // --- HARVESTING ---
     if (!creep.memory.working) {
-      // Find a source to harvest from if we don't have one
-      if (!creep.memory.target) {
-        const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-        if (source) {
-          creep.memory.target = source.id;
+      // Find an available harvest spot if we don't have one
+      if (!creep.memory.target || !creep.memory.targetPos) {
+        console.log(`${creep.name}: Looking for harvest spot...`);
+        const spot = Targeting.findAvailableHarvestSpot(creep);
+        if (spot) {
+          creep.memory.target = spot.id;
+          creep.memory.targetPos = spot.pos;
+          console.log(`${creep.name}: Found spot at (${spot.pos.x},${spot.pos.y}) for source ${spot.id}`);
         } else {
-          // No active sources? Wait.
-          creep.say(" idling ");
+          // No spots available - wait
+          creep.say("⏳ waiting");
+          console.log(`${creep.name}: No available harvest spots`);
           return;
         }
       }
 
-      // Try to harvest from the target source
+      // Move to and harvest from the target spot
       const source = Game.getObjectById(creep.memory.target as Id<Source>);
-      if (source) {
-        const harvestResult = creep.harvest(source);
-        if (harvestResult === ERR_NOT_IN_RANGE) {
-          creep.moveTo(source, { visualizePathStyle: { stroke: "#ffaa00" }, reusePath: 5 });
-        } else if (harvestResult !== OK) {
-          creep.memory.target = undefined; // Clear target if there's an issue (e.g., source empty)
+      if (source && creep.memory.targetPos) {
+        console.log(`${creep.name}: Pos: (${creep.pos.x},${creep.pos.y}) | Target: (${creep.memory.targetPos.x},${creep.memory.targetPos.y}) | At spot: ${creep.pos.isEqualTo(creep.memory.targetPos)}`);
+        // Only harvest when at the exact spot
+        if (creep.pos.isEqualTo(creep.memory.targetPos)) {
+          const harvestResult = creep.harvest(source);
+          console.log(`${creep.name}: Harvesting - result: ${harvestResult}`);
+          if (harvestResult !== OK && harvestResult !== ERR_NOT_ENOUGH_RESOURCES && harvestResult !== ERR_TIRED) {
+            // Clear target if there's an unexpected issue
+            creep.memory.target = undefined;
+            creep.memory.targetPos = undefined;
+          }
+        } else {
+          console.log(`${creep.name}: Moving to harvest spot...`);
+          const moveResult = moveTo(creep, creep.memory.targetPos);
+          console.log(`${creep.name}: Move result: ${moveResult}`);
         }
       } else {
-        // Target source doesn't exist anymore? Clear target.
+        // Target source doesn't exist anymore - clear it
+        console.log(`${creep.name}: Lost source or targetPos - resetting`);
         creep.memory.target = undefined;
+        creep.memory.targetPos = undefined;
       }
     }
     // --- WORKING ---
@@ -65,7 +86,7 @@ export class RoleBuilder {
 
       if (fillTarget) {
         if (creep.transfer(fillTarget, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-          creep.moveTo(fillTarget, { visualizePathStyle: { stroke: "#ffffff" }, reusePath: 5 });
+          moveTo(creep, fillTarget);
         }
         return; // Job is done for this tick
       }
@@ -74,7 +95,7 @@ export class RoleBuilder {
       const constructionSite = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
       if (constructionSite) {
         if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-          creep.moveTo(constructionSite, { visualizePathStyle: { stroke: "#aaaaaa" }, reusePath: 5 });
+          moveTo(creep, constructionSite);
         }
         return; // Job is done for this tick
       }
@@ -82,7 +103,7 @@ export class RoleBuilder {
       // Priority 3: Upgrade Controller
       if (creep.room.controller) {
         if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-          creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#4CAF50" }, reusePath: 5 });
+          moveTo(creep, creep.room.controller);
         }
         return; // Job is done for this tick
       }
@@ -90,9 +111,10 @@ export class RoleBuilder {
       // If nothing else to do, idle near spawn
       const spawn = creep.pos.findClosestByRange(FIND_MY_SPAWNS);
       if (spawn && !creep.pos.isNearTo(spawn)) {
-        creep.moveTo(spawn, { visualizePathStyle: { stroke: "#888888" }, reusePath: 10 });
+        moveTo(creep, spawn, { reusePath: 10 });
       }
-      creep.say(" idling ");
+      creep.say("💤 idling");
     }
   }
 }
+

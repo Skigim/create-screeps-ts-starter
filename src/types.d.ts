@@ -5,6 +5,7 @@ declare global {
     room?: string;
     working?: boolean;
     target?: Id<Source | StructureController | ConstructionSite>;
+    targetPos?: RoomPosition;
   }
 
   interface RoomMemory {
