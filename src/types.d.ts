@@ -1,6 +1,6 @@
 declare global {
   interface CreepMemory {
-    role: string;
+    role: "harvester" | "builder" | "upgrader" | "hauler" | "defender" | "attacker";
     type?: "economy" | "military";
     room?: string;
     working?: boolean;
@@ -19,5 +19,8 @@ declare global {
     }
   }
 }
+
+// Export the CreepRole type for use in other files
+export type CreepRole = "harvester" | "builder" | "upgrader" | "hauler" | "defender" | "attacker";
 
 export {};
