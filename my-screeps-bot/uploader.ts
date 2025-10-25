@@ -79,7 +79,7 @@ async function uploadToAPI(
     throw new Error(`Upload failed: ${response.status} ${text}`);
   }
 
-  const result = await response.json();
+  const result = (await response.json()) as { ok?: boolean };
   if (result.ok) {
     console.log(
       `🚀 Uploaded ${Object.keys(modules).length} modules to ${server.host}`
