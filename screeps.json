@@ -1,0 +1,19 @@
+{
+  "main": {
+    "token": "YOUR_TOKEN_HERE",
+    "protocol": "https",
+    "hostname": "screeps.com",
+    "port": 443,
+    "path": "/",
+    "branch": "default"
+  },
+  "local": {
+    "username": "username",
+    "password": "password",
+    "protocol": "http",
+    "hostname": "localhost",
+    "port": 21025,
+    "path": "/",
+    "branch": "default"
+  }
+}
